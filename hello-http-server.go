@@ -16,7 +16,7 @@ var (
 func main() {
 	flag.Parse()
 	fmt.Printf("HTTP Hello Server v%s\n", version)
-	fmt.Printf("Starting HTTP server on 0.0.0.0:%d\n", *portFlag)
+	fmt.Printf("Starting HTTP server on :%d\n", *portFlag)
 	initServer()
 }
 
@@ -24,7 +24,7 @@ func initServer() {
 	multiplexer := http.NewServeMux()
 	multiplexer.HandleFunc("/", handleIndex)
 
-	log.Fatal(http.ListenAndServe(fmt.Sprintf("0.0.0.0:%d", *portFlag), createAccessLoggingInterceptor(multiplexer)))
+	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%d", *portFlag), createAccessLoggingInterceptor(multiplexer)))
 }
 
 func handleIndex(w http.ResponseWriter, req *http.Request) {
