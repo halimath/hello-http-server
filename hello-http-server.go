@@ -6,7 +6,12 @@ import (
 	"log"
 	"net"
 	"net/http"
+	"strings"
 	"time"
+)
+
+const (
+	logDateFormat = "2006-01-02T15:04:05-0700"
 )
 
 var (
@@ -30,7 +35,6 @@ func initServer() {
 		log.Fatal(err)
 	}
 	log.Fatal(http.Serve(listen, createAccessLoggingInterceptor(multiplexer)))
-
 	// log.Fatal(http.ListenAndServe(fmt.Sprintf(":%d", *portFlag), ))
 }
 
@@ -41,7 +45,8 @@ func handleIndex(w http.ResponseWriter, req *http.Request) {
 
 func createAccessLoggingInterceptor(handler http.Handler) http.Handler {
 	return http.HandlerFunc(func(r http.ResponseWriter, req *http.Request) {
-		fmt.Printf("%s %s %s %s\n", time.Now(), req.RemoteAddr, req.Method, req.URL)
+		remoteAddr := req.RemoteAddr[:strings.LastIndex(req.RemoteAddr, ":")]
+		fmt.Printf("%s %s %s %s\n", time.Now().Format(logDateFormat), remoteAddr, req.Method, req.URL)
 		handler.ServeHTTP(r, req)
 	})
 }
