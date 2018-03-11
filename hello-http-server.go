@@ -4,6 +4,7 @@ import (
 	"flag"
 	"fmt"
 	"log"
+	"net"
 	"net/http"
 	"time"
 )
@@ -24,7 +25,13 @@ func initServer() {
 	multiplexer := http.NewServeMux()
 	multiplexer.HandleFunc("/", handleIndex)
 
-	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%d", *portFlag), createAccessLoggingInterceptor(multiplexer)))
+	listen, err := net.Listen("tcp4", ":8080")
+	if err != nil {
+		log.Fatal(err)
+	}
+	log.Fatal(http.Serve(listen, createAccessLoggingInterceptor(multiplexer)))
+
+	// log.Fatal(http.ListenAndServe(fmt.Sprintf(":%d", *portFlag), ))
 }
 
 func handleIndex(w http.ResponseWriter, req *http.Request) {
